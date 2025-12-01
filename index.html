@@ -32,14 +32,14 @@
         @layer utilities {
             .text-shadow-glow { text-shadow: 0 0 10px rgba(0, 104, 255, 0.5); }
             .glow-border { box-shadow: 0 0 12px rgba(24, 229, 160, 0.3); }
-            .bg-grid { background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://.w3.org/2000/svg"%3E%3Ccircle cx="1" cy="1" r="1" fill="%230068FF" fill-opacity="0.1"/%3E%3C/svg%3E'); background-size: 20px 20px; }
+            .bg-grid { background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="1" cy="1" r="1" fill="%230068FF" fill-opacity="0.1"/%3E%3C/svg%3E'); background-size: 20px 20px; }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Changa+One&display=swap" rel="stylesheet">
 </head>
 <body class="bg-dark text-white font-sans overflow-x-hidden">
 
-    <header class="fixed w-full z-50 bg-dark/90 backdrop-blur-md" id="navbar">
+    <header class="fixed w-full z-50 bg-dark/90 backdrop-blur-md">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <img src="images/gdog_logo.png" alt="GDOG" class="w-10 h-10 rounded-full">
@@ -61,7 +61,6 @@
             <p class="text-xl md:text-2xl text-light-gray max-w-3xl mx-auto mb-10">输入事件 ID 参与预测，赢取奖池</p>
 
             <div class="bg-dark/50 p-8 rounded-2xl border border-primary/30 max-w-2xl mx-auto space-y-8">
-
                 <button id="connectWalletButton" class="w-full py-4 bg-primary text-white rounded-full text-xl font-bold hover:bg-primary/80 transition-all">
                     连接钱包
                 </button>
@@ -112,35 +111,44 @@
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        // 完全复制你 Swap 页面的网络配置
-        const chains = {
-            GateLayer: {
-                chainId: 10088,
-                chainName: 'Gate Layer',
-                rpcUrl: 'https://gatelayer-mainnet.gatenode.cc/',
-                blockExplorer: 'https://www.gatescan.org/gatelayer/',
-                nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 }
-            }
-        };
-
         const CONTRACT = '0x9567BB996f01eF0f634B553efD71CcC53F2D303f';
         const GDOG = '0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04';
 
-        const ABI = [{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"events","outputs":[{"internalType":"string","name":"optionYes","type":"string"},{"internalType":"string","name":"optionNo","type":"string"},{"internalType":"uint64","name":"startTime","type":"uint64"},{"internalType":"uint64","name":"bettingDeadline","type":"uint64"},{"internalType":"uint128","name":"totalYes","type":"uint128"},{"internalType":"uint128","name":"totalNo","type":"uint128"},{"internalType":"uint64","name":"resolvedTime","type":"uint64"},{"internalType":"bool","name":"yesWins","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userBets","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        // 完整必要的 ABI（重点修复）
+        const ABI = [
+            {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"events","outputs":[
+                {"internalType":"string","name":"optionYes","type":"string"},
+                {"internalType":"string","name":"optionNo","type":"string"},
+                {"internalType":"uint64","name":"startTime","type":"uint64"},
+                {"internalType":"uint64","name":"bettingDeadline","type":"uint64"},
+                {"internalType":"uint128","name":"totalYes","type":"uint128"},
+                {"internalType":"uint128","name":"totalNo","type":"uint128"},
+                {"internalType":"uint64","name":"resolvedTime","type":"uint64"},
+                {"internalType":"bool","name":"yesWins","type":"bool"}
+            ],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userBets","outputs":[
+                {"internalType":"uint256","name":"","type":"uint256","components":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}]}
+            ],"stateMutability":"view","type":"function"}
+        ];
 
-        const ERC20_ABI = [{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        // 标准 ERC20 ABI（必须完整）
+        const ERC20_ABI = [
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+        ];
+
+        const chains = {GateLayer:{chainId:10088,chainName:"Gate Layer",rpcUrl:"https://gatelayer-mainnet.gatenode.cc/",blockExplorer:"https://www.gatescan.org/gatelayer/",nativeCurrency:{name:"GT",symbol:"GT",decimals:18}}};
 
         let web3, account, contract, token;
 
-        // 完全复制你 Swap 的连接方式
         async function initializeWeb3() {
-            if (!window.ethereum) {
-                document.getElementById('status').textContent = '请安装 MetaMask';
-                return;
-            }
+            if (!window.ethereum) return document.getElementById('status').textContent = '请安装 MetaMask';
             web3 = new Web3(window.ethereum);
             try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                await window.ethereum.request({method: 'eth_requestAccounts'});
                 account = (await web3.eth.getAccounts())[0];
                 await switchNetwork('GateLayer');
 
@@ -149,35 +157,28 @@
 
                 document.getElementById('connectWalletButton').innerHTML = `已连接: ${account.slice(0,6)}...${account.slice(-4)}`;
                 document.getElementById('connectWalletButton').disabled = true;
-                document.getElementById('networkStatus').textContent = '已连接 GateLayer 主网';
+                document.getElementById('networkStatus').textContent = 'GateLayer 主网已连接';
                 updateBalance();
                 setInterval(updateBalance, 10000);
                 document.getElementById('status').textContent = '连接成功！请输入事件 ID';
             } catch (e) {
-                document.getElementById('status').textContent = '连接失败，请重试';
+                document.getElementById('status').textContent = '连接被拒绝或失败';
             }
         }
 
-        // 完全复制你 Swap 页面的切网逻辑
         async function switchNetwork(chain) {
-            const chainConfig = chains[chain];
+            const c = chains[chain];
             try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: `0x${chainConfig.chainId.toString(16)}` }]
-                });
-            } catch (switchError) {
-                if (switchError.code === 4902) {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: `0x${chainConfig.chainId.toString(16)}`,
-                            chainName: chainConfig.chainName,
-                            rpcUrls: [chainConfig.rpcUrl],
-                            nativeCurrency: chainConfig.nativeCurrency,
-                            blockExplorerUrls: [chainConfig.blockExplorer]
-                        }]
-                    });
+                await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{chainId: `0x${c.chainId.toString(16)}`}]});
+            } catch (e) {
+                if (e.code === 4902) {
+                    await window.ethereum.request({method: 'wallet_addEthereumChain', params: [{
+                        chainId: `0x${c.chainId.toString(16)}`,
+                        chainName: c.chainName,
+                        rpcUrls: [c.rpcUrl],
+                        nativeCurrency: c.nativeCurrency,
+                        blockExplorerUrls: [c.blockExplorer]
+                    }]});
                 }
             }
         }
@@ -190,92 +191,85 @@
             } catch {}
         }
 
-        // 加载事件
         async function loadEvent() {
             const id = document.getElementById('eventId').value.trim();
-            if (!id) return;
+            if (!id || !contract) return;
 
             try {
                 const e = await contract.methods.events(id).call();
-                if (!e.optionYes && !e.optionNo) throw '';
+                if (e.optionYes === "" && e.optionNo === "") throw '';
 
                 const now = Math.floor(Date.now()/1000);
                 const open = now <= e.bettingDeadline && e.resolvedTime == 0;
                 const resolved = e.resolvedTime > 0;
 
                 document.getElementById('title').textContent = `${e.optionYes} vs ${e.optionNo}`;
-                document.getElementById('deadline').textContent = `截止：${new Date(e.bettingDeadline*1000).toLocaleString()}`;
+                document.getElementById('deadline').textContent = `投注截止：${new Date(Number(e.bettingDeadline)*1000).toLocaleString()}`;
                 document.getElementById('poolYes').textContent = Number(web3.utils.fromWei(e.totalYes,'ether')).toFixed(4);
                 document.getElementById('poolNo').textContent = Number(web3.utils.fromWei(e.totalNo,'ether')).toFixed(4);
 
                 document.getElementById('betSection').style.display = open ? 'block' : 'none';
                 document.getElementById('claimBtn').classList.toggle('hidden', !resolved);
-
                 if (resolved) {
-                    document.getElementById('claimBtn').textContent = e.yesWins ? 'YES 胜 → 领取奖励' : 'NO 胜 → 领取奖励';
+                    document.getElementById('claimBtn').textContent = e.yesWins ? 'YES 获胜 → 领取奖励' : 'NO 获胜 → 领取奖励';
                 }
 
                 document.getElementById('eventCard').classList.remove('hidden');
                 document.getElementById('status').textContent = `事件 #${id} 加载成功`;
             } catch {
-                document.getElementById('status').textContent = '事件不存在或加载失败';
+                document.getElementById('status').textContent = '事件不存在或已结束';
             }
         }
 
-        // 自动授权
         async function approveIfNeeded(amountWei) {
-            const a = await token.methods.allowance(account, CONTRACT).call();
-            if (BigInt(a) >= amountWei) return;
-            document.getElementById('status').textContent = '请授权 GDOG（只需一次）';
+            const allowance = await token.methods.allowance(account, CONTRACT).call();
+            if (BigInt(allowance) >= BigInt(amountWei)) return true;
+            document.getElementById('status').textContent = '需要授权 GDOG（只需一次）...';
             await token.methods.approve(CONTRACT, '115792089237316195423570985008687907853269984665640564039457584007913129639935').send({from: account});
-            document.getElementById('status').textContent = '授权成功！';
+            document.getElementById('status').textContent = '授权成功，可投注';
+            return true;
         }
 
-        // 投注
         async function placeBet(yes) {
             const amt = document.getElementById('betAmount').value.trim();
-            if (!amt || Number(amt) <= 0) return document.getElementById('status').textContent = '请输入有效数量';
+            if (!amt || isNaN(amt) || Number(amt) <= 0) return document.getElementById('status').textContent = '请输入正确数量';
 
-            const wei = web3.utils.toWei(amt, 'ether');
+            const amountWei = web3.utils.toWei(amt, 'ether');
             const id = document.getElementById('eventId').value;
 
             try {
-                await approveIfNeeded(wei);
-                document.getElementById('status').textContent = '投注中...';
-                await contract.methods.bet(id, yes, wei).send({from: account});
+                await approveIfNeeded(amountWei);
+                document.getElementById('status').textContent = '发送投注交易中...';
+                await contract.methods.bet(id, yes, amountWei).send({from: account});
                 document.getElementById('status').textContent = '投注成功！';
                 document.getElementById('betAmount').value = '';
-                setTimeout(loadEvent, 2000);
-            } catch {
-                document.getElementById('status').textContent = '投注失败或已取消';
+                setTimeout(loadEvent, 3000);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('status').textContent = '投注失败：用户取消或余额不足';
             }
         }
 
-        // 领奖
         async function claim() {
             const id = document.getElementById('eventId').value;
-            document.getElementById('status').textContent = '领取中...';
+            document.getElementById('status').textContent = '领取奖励中...';
             try {
                 await contract.methods.claim(id).send({from: account});
                 document.getElementById('status').textContent = '领取成功！';
-                setTimeout(loadEvent, 2000);
+                setTimeout(loadEvent, 3000);
             } catch {
-                document.getElementById('status').textContent = '无奖励或已领取';
+                document.getElementById('status').textContent = '无奖励可领或已领取';
             }
         }
 
-        // 完全复制你 Swap 页面的绑定方式
         document.getElementById('connectWalletButton').addEventListener('click', initializeWeb3);
         document.getElementById('eventId').addEventListener('change', loadEvent);
         document.getElementById('betYesBtn').addEventListener('click', () => placeBet(true));
         document.getElementById('betNoBtn').addEventListener('click', () => placeBet(false));
         document.getElementById('claimBtn').addEventListener('click', claim);
 
-        // 页面加载时自动检查
         window.addEventListener('load', () => {
-            if (window.ethereum?.selectedAddress) {
-                initializeWeb3();
-            }
+            if (window.ethereum?.selectedAddress) initializeWeb3();
         });
     </script>
 </body>
