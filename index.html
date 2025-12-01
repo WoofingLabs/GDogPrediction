@@ -102,7 +102,16 @@
 
         const abi = [
             {"inputs":[],"name":"owner","outputs":[{"type":"address"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"type":"uint256"}],"name":"events","outputs":[{"type":"string"},{"type":"string"},{"type":"uint64"},{"type":"uint64"},{"type":"uint128"},{"type":"uint128"},{"type":"uint64"},{"type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"type":"uint256"}],"name":"events","outputs":[
+                {"name":"optionYes","type":"string"},
+                {"name":"optionNo","type":"string"},
+                {"name":"startTime","type":"uint64"},
+                {"name":"bettingDeadline","type":"uint64"},
+                {"name":"totalYes","type":"uint128"},
+                {"name":"totalNo","type":"uint128"},
+                {"name":"resolvedTime","type":"uint64"},
+                {"name":"yesWins","type":"bool"}
+            ],"stateMutability":"view","type":"function"},
             {"inputs":[{"type":"uint256"},{"type":"address"}],"name":"userBets","outputs":[{"type":"uint256"},{"type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"nextEventId","outputs":[{"type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"type":"string"},{"type":"string"},{"type":"uint64"}],"name":"create","outputs":[],"stateMutability":"nonpayable","type":"function"},
@@ -115,44 +124,39 @@
         let currentEventId, currentIsYes;
 
         async function initializeWeb3() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    account = (await web3.eth.getAccounts())[0];
-                    document.getElementById('connectWalletButton').innerHTML = `Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
-                    await switchNetwork('GateLayer');
-                    contract = new web3.eth.Contract(abi, CONTRACT);
-                    const realOwner = await contract.methods.owner().call();
-                    isOwner = account.toLowerCase() === realOwner.toLowerCase();
-                    if (isOwner) document.getElementById('ownerPanel').classList.remove('hidden');
-                    loadEvents();
-                    setInterval(loadEvents, 15000);
-                } catch (error) {
-                    alert('连接失败：' + error.message);
-                }
-            } else {
-                alert('请安装 MetaMask');
-            }
+            if (!window.ethereum) return alert("请安装 MetaMask");
+            web3 = new Web3(window.ethereum);
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = (await web3.eth.getAccounts())[0];
+                document.getElementById('connectWalletButton').innerHTML = `Connected: ${account.slice(0,6)}...${account.slice(-4)}`;
+                await switchNetwork('GateLayer');
+                contract = new web3.eth.Contract(abi, CONTRACT);
+                const realOwner = await contract.methods.owner().call();
+                isOwner = account.toLowerCase() === realOwner.toLowerCase();
+                if (isOwner) document.getElementById('ownerPanel').classList.remove('hidden');
+                loadEvents();
+                setInterval(loadEvents, 15000);
+            } catch (e) { alert("连接失败：" + e.message); }
         }
 
         async function switchNetwork(chain) {
-            const chainConfig = chains[chain];
+            const c = chains[chain];
             try {
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: `0x${chainConfig.chainId.toString(16)}` }]
+                    params: [{ chainId: `0x${c.chainId.toString(16)}` }]
                 });
-            } catch (switchError) {
-                if (switchError.code === 4902) {
+            } catch (e) {
+                if (e.code === 4902) {
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
-                            chainId: `0x${chainConfig.chainId.toString(16)}`,
-                            chainName: chainConfig.chainName,
-                            rpcUrls: [chainConfig.rpcUrl],
-                            nativeCurrency: chainConfig.nativeCurrency,
-                            blockExplorerUrls: [chainConfig.blockExplorer]
+                            chainId: `0x${c.chainId.toString(16)}`,
+                            chainName: c.chainName,
+                            rpcUrls: [c.rpcUrl],
+                            nativeCurrency: c.nativeCurrency,
+                            blockExplorerUrls: [c.blockExplorer]
                         }]
                     });
                 }
@@ -162,7 +166,7 @@
         async function loadEvents() {
             if (!contract || !account) return;
             const list = document.getElementById('eventsList');
-            list.innerHTML = '<div class="text-center py-20 text-gray-400"><i class="fa fa-spinner fa-spin"></i> 加载中...</div>';
+            list.innerHTML = '<div class="text-center py-20 text-gray-400">加载中...</div>';
             try {
                 const latest = Number(await contract.methods.nextEventId().call()) - 1;
                 let html = '';
@@ -206,7 +210,7 @@
                     </div>`;
                 }
                 list.innerHTML = html || '<div class="text-center py-20 text-gray-400">暂无事件</div>';
-            } catch (e) { list.innerHTML = '<div class="text-red-400">加载失败：'+e.message+'</div>'; }
+            } catch (e) { list.innerHTML = '<div class="text-red-400 text-center py-20">加载失败：'+e.message+'</div>'; }
         }
 
         function formatTime(t){ if(t<=0) return'已结束'; const h=Math.floor(t/36e5),m=Math.floor(t%36e5/6e4); return h+'小时'+m+'分'; }
