@@ -67,7 +67,7 @@
     合约地址: 0x9567BB996f01eF0f634B553efD71CcC53F2D303f | GDOG: 0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
 <script>
     const CONTRACT = '0x9567BB996f01eF0f634B553efD71CcC53F2D303f';
     const GDOG = '0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04';
@@ -87,53 +87,69 @@
 
     async function switchChain() {
         try {
-            await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x2768' }] });
+            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x2768' }] });
         } catch (e) {
             if (e.code === 4902) {
-                await ethereum.request({ method: 'wallet_addEthereumChain', params: [{
-                    chainId: '0x2768',
-                    chainName: 'Gate Layer',
-                    rpcUrls: ['https://gatelayer-mainnet.gatenode.cc/'],
-                    nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 },
-                    blockExplorerUrls: ['https://www.gatescan.org/gatelayer/']
-                }]});
+                try {
+                    await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{
+                        chainId: '0x2768',
+                        chainName: 'Gate Layer',
+                        rpcUrls: ['https://gatelayer-mainnet.gatenode.cc/'],
+                        nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 },
+                        blockExplorerUrls: ['https://www.gatescan.org/gatelayer/']
+                    }]});
+                } catch (addError) {
+                    console.error('添加链失败:', addError);
+                }
+            } else {
+                console.error('切换链失败:', e);
             }
         }
     }
 
     async function connect() {
-        await ethereum.request({ method: 'eth_requestAccounts' });
-        account = (await web3.eth.getAccounts())[0];
-        contract = new web3.eth.Contract(ABI, CONTRACT);
-        token = new web3.eth.Contract(ERC20_ABI, GDOG);
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            account = accounts[0];
+            contract = new web3.eth.Contract(ABI, CONTRACT);
+            token = new web3.eth.Contract(ERC20_ABI, GDOG);
 
-        const owner = await contract.methods.owner().call();
-        isOwner = owner.toLowerCase() === account.toLowerCase();
-        if (isOwner) document.getElementById("ownerPanel").classList.remove("hidden");
+            const owner = await contract.methods.owner().call();
+            isOwner = owner.toLowerCase() === account.toLowerCase();
+            if (isOwner) document.getElementById("ownerPanel").classList.remove("hidden");
 
-        document.getElementById("connectBtn").innerHTML = `${account.slice(0,6)}...${account.slice(-4)}`;
-        document.getElementById("connectBtn").disabled = true;
+            document.getElementById("connectBtn").innerHTML = `${account.slice(0,6)}...${account.slice(-4)}`;
+            document.getElementById("connectBtn").classList.add("bg-green-600");
+            document.getElementById("connectBtn").disabled = true;
 
-        loadAllEvents();
-        document.getElementById("loadSingleBtn").onclick = () => loadSingleEvent();
-        document.getElementById("createBtn").onclick = createEvent;
+            loadAllEvents();
+            document.getElementById("loadSingleBtn").onclick = () => loadSingleEvent();
+            document.getElementById("createBtn").onclick = createEvent;
+        } catch (err) {
+            document.getElementById("status").textContent = '连接失败: ' + err.message;
+            console.error(err);
+        }
     }
 
     async function loadAllEvents() {
-        const nextId = await contract.methods.nextEventId().call();
-        const container = document.getElementById("eventsContainer");
-        container.innerHTML = "";
-        for (let i = 1; i < nextId; i++) {
-            renderEventCard(i);
+        try {
+            const nextId = await contract.methods.nextEventId().call();
+            const container = document.getElementById("eventsContainer");
+            container.innerHTML = "";
+            for (let i = 1; i < nextId; i++) {
+                renderEventCard(i);
+            }
+            if (nextId == 1) container.innerHTML = "<p class='text-center text-xl text-gray-400'>暂无事件，等待 Owner 创建</p>";
+        } catch (e) {
+            setStatus("加载事件失败");
         }
-        if (nextId == 1) container.innerHTML = "<p class='text-center text-xl text-gray-400'>暂无事件，等待 Owner 创建</p>";
     }
 
     async function loadSingleEvent() {
         const id = document.getElementById("eventIdInput").value.trim();
         if (!id || id < 1) return alert("请输入正确的 ID");
         document.getElementById("eventsContainer").innerHTML = "";
-        renderEventCard(parseInt(id));
+        await renderEventCard(parseInt(id));
     }
 
     async function renderEventCard(id) {
@@ -144,6 +160,11 @@
 
             const isOpen = now <= e.bettingDeadline && e.resolvedTime == 0;
             const isResolved = e.resolvedTime > 0;
+
+            const yesBal = web3.utils.fromWei(user[0], 'ether');
+            const noBal = web3.utils.fromWei(user[1], 'ether');
+            const totalYes = web3.utils.fromWei(e.totalYes, 'ether');
+            const totalNo = web3.utils.fromWei(e.totalNo, 'ether');
 
             const card = document.createElement("div");
             card.className = "bg-black/50 border border-blue-500/30 rounded-xl p-8";
@@ -162,18 +183,18 @@
 
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div class="text-center bg-blue-900/30 rounded-lg p-5">
-                        <p class="text-3xl font-bold text-[#0068FF]">${(BigInt(e.totalYes)/10n**18n).toString()}</p>
+                        <p class="text-3xl font-bold text-[#0068FF]">${totalYes}</p>
                         <p class="text-gray-400">YES 奖池</p>
                     </div>
                     <div class="text-center bg-red-900/30 rounded-lg p-5">
-                        <p class="text-3xl font-bold text-[#18E5A0]">${(BigInt(e.totalNo)/10n**18n).toString()}</p>
+                        <p class="text-3xl font-bold text-[#18E5A0]">${totalNo}</p>
                         <p class="text-gray-400">NO 奖池</p>
                     </div>
                 </div>
 
                 <div class="text-gray-400 mb-6">
-                    <div>你投 YES：${(BigInt(user[0])/10n**18n).toString()} GDOG</div>
-                    <div>你投 NO：${(BigInt(user[1])/10n**18n).toString()} GDOG</div>
+                    <div>你投 YES：${yesBal} GDOG</div>
+                    <div>你投 NO：${noBal} GDOG</div>
                 </div>
 
                 ${isOpen ? `<div class="flex gap-4">
@@ -182,22 +203,27 @@
                     <button onclick="bet(${id},false)" class="px-8 py-3 bg-[#18E5A0] text-black rounded-lg font-bold hover:bg-[#18E5A0]/80">投 NO</button>
                 </div>` : ''}
 
-                ${isResolved && (BigInt(user[0]) > 0n || BigInt(user[1]) > 0n) ? `<button onclick="claim(${id})" class="mt-4 w-full py-4 bg-gradient-to-r from-[#0068FF] to-[#18E5A0] rounded-xl font-bold text-xl hover:opacity-90">
-                    ${((e.yesWins && BigInt(user[0])>0n) || (!e.yesWins && BigInt(user[1])>0n)) ? '领取奖励' : '你没在胜方，无奖励'}
+                ${isResolved && (parseFloat(yesBal) > 0 || parseFloat(noBal) > 0) ? `<button onclick="claim(${id})" class="mt-4 w-full py-4 bg-gradient-to-r from-[#0068FF] to-[#18E5A0] rounded-xl font-bold text-xl hover:opacity-90">
+                    ${((e.yesWins && parseFloat(yesBal)>0) || (!e.yesWins && parseFloat(noBal)>0)) ? '领取奖励' : '你没在胜方，无奖励'}
                 </button>` : ''}
             `;
             document.getElementById("eventsContainer").appendChild(card);
         } catch (e) {
             console.log("事件 "+id+" 不存在或已删除");
+            setStatus("事件不存在");
         }
     }
 
     async function approveIfNeeded(amountWei) {
-        const allowance = await token.methods.allowance(account, CONTRACT).call();
-        if (BigInt(allowance) >= amountWei) return;
-        setStatus("正在授权 GDOG...");
-        await token.methods.approve(CONTRACT, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({from: account});
-        setStatus("授权完成");
+        try {
+            const allowance = await token.methods.allowance(account, CONTRACT).call();
+            if (web3.utils.toBN(allowance).gte(web3.utils.toBN(amountWei))) return;
+            setStatus("正在授权 GDOG...");
+            await token.methods.approve(CONTRACT, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({from: account});
+            setStatus("授权完成");
+        } catch (e) {
+            throw new Error("授权失败: " + e.message);
+        }
     }
 
     async function createEvent() {
@@ -210,8 +236,10 @@
             await contract.methods.create(yes, no, h).send({from: account});
             setStatus("创建成功！");
             document.getElementById("yesText").value = document.getElementById("noText").value = document.getElementById("hours").value = "";
-            loadAll  Events();
-        } catch (e) { setStatus("创建失败"); }
+            loadAllEvents();
+        } catch (e) { 
+            setStatus("创建失败: " + e.message); 
+        }
     }
 
     window.bet = async (id, yes) => {
@@ -227,7 +255,7 @@
             input.value = "";
             renderEventCard(id);  // 刷新单个卡片
         } catch (e) {
-            setStatus(e.message.includes("User denied") ? "已取消" : "投注失败");
+            setStatus(e.message.includes("User denied") ? "已取消" : "投注失败: " + e.message);
         }
     };
 
@@ -238,7 +266,7 @@
             setStatus("领取成功！");
             renderEventCard(id);
         } catch (e) {
-            setStatus("无奖励或已领取");
+            setStatus("无奖励或已领取: " + e.message);
         }
     };
 
@@ -249,7 +277,7 @@
             await contract.methods.resolve(id, yesWins).send({from: account});
             setStatus("已结算");
             renderEventCard(id);
-        } catch (e) { setStatus("结算失败"); }
+        } catch (e) { setStatus("结算失败: " + e.message); }
     };
 
     function setStatus(msg) {
