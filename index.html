@@ -6,106 +6,99 @@
     <title>GDOG 预测市场</title>
     <link rel="icon" type="image/png" href="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0068FF',
-                        secondary: '#18E5A0',
-                        accent: '#FFD700',
-                        dark: '#070808',
-                        'light-gray': '#E5E7EB'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        display: ['Changa One', 'system-ui', 'sans-serif']
-                    },
-                    animation: { 'float': 'float 3s ease-in-out infinite' },
-                    keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } } }
-                }
-            }
-        }
-    </script>
     <style type="text/tailwindcss">
         @layer utilities {
             .text-shadow-glow { text-shadow: 0 0 10px rgba(0, 104, 255, 0.5); }
             .glow-border { box-shadow: 0 0 12px rgba(24, 229, 160, 0.3); }
             .bg-grid { background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="1" cy="1" r="1" fill="%230068FF" fill-opacity="0.1"/%3E%3C/svg%3E'); background-size: 20px 20px; }
+            .text-pool { @apply text-4xl sm:text-5xl lg:text-6xl font-bold truncate; }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Changa+One&display=swap" rel="stylesheet">
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        main { flex: 1; }
+        @media (max-width: 640px) {
+            .mobile-input-fix { margin-bottom: 220px; }
+        }
+    </style>
 </head>
-<body class="bg-dark text-white font-sans overflow-x-hidden">
+<body class="bg-[#070808] text-white font-sans overflow-x-hidden flex flex-col">
 
-    <header class="fixed w-full z-50 bg-dark/90 backdrop-blur-md">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#070808]/90 backdrop-blur-md border-b border-[#0068FF]/20">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-10 h-10 rounded-full">
-                <span class="font-display text-3xl text-primary text-shadow-glow">GDOG 预测市场</span>
+                <span class="font-display text-2xl sm:text-3xl text-[#0068FF] text-shadow-glow">GDOG 预测市场</span>
             </div>
         </div>
     </header>
 
-    <section class="min-h-screen pt-24 pb-16 bg-grid relative overflow-hidden flex items-center justify-center">
-        <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-dark pointer-events-none"></div>
-        <div class="absolute top-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
+    <main class="flex-1 pt-20 pb-10 bg-grid relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0068FF]/10 to-[#070808] pointer-events-none"></div>
+        <div class="absolute top-0 left-0 w-80 h-80 bg-[#0068FF]/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-80 h-80 bg-[#18E5A0]/10 rounded-full blur-3xl"></div>
 
-        <div class="container mx-auto px-4 text-center relative z-10">
-            <div class="w-48 h-48 mx-auto mb-8 animate-float">
-                <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-full h-full object-cover rounded-full border-4 border-secondary/50 glow-border">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-10">
+                <div class="w-40 h-40 sm:w-48 sm:h-48 mx-auto mb-8 animate-float">
+                    <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-full h-full object-cover rounded-full border-4 border-[#18E5A0]/50 glow-border">
+                </div>
+                <h1 class="font-display text-4xl sm:text-6xl md:text-7xl mb-4 text-[#0068FF] text-shadow-glow">GDOG 预测市场</h1>
+                <p class="text-lg sm:text-2xl text-[#E5E7EB]">输入事件 ID 参与预测，赢取奖池</p>
             </div>
-            <h1 class="font-display text-5xl md:text-7xl mb-6 text-primary text-shadow-glow">GDOG 预测市场</h1>
-            <p class="text-xl md:text-2xl text-light-gray max-w-3xl mx-auto mb-10">输入事件 ID 参与预测，赢取奖池</p>
 
-            <div class="bg-dark/50 p-8 rounded-2xl border border-primary/30 max-w-2xl mx-auto space-y-8">
-                <button id="connectWalletButton" class="w-full py-4 bg-primary text-white rounded-full text-xl font-bold hover:bg-primary/80 transition-all">
+            <div class="bg-[#070808]/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border border-[#0068FF]/30 shadow-2xl">
+                <button id="connectWalletButton" class="w-full py-4 bg-[#0068FF] text-white rounded-full text-lg sm:text-xl font-bold hover:bg-[#0068FF]/80 transition-all">
                     连接钱包
                 </button>
 
-                <p id="networkStatus" class="text-light-gray text-sm">点击上方按钮连接钱包</p>
-                <p id="balanceStatus" class="text-light-gray text-sm">GDOG 余额: 加载中...</p>
-
-                <div class="text-center">
-                    <input id="eventId" type="number" min="1" placeholder="输入事件 ID（如 1）" class="w-80 px-6 py-4 bg-dark/80 border border-primary/30 rounded-full text-center text-xl focus:border-secondary focus:outline-none">
+                <div class="mt-4 space-y-2 text-sm sm:text-base text-[#E5E7EB]">
+                    <p id="networkStatus">点击上方按钮连接钱包</p>
+                    <p id="balanceStatus">GDOG 余额: 加载中...</p>
                 </div>
 
-                <div id="eventCard" class="hidden space-y-8">
-                    <h2 id="title" class="text-4xl font-bold text-secondary"></h2>
-                    <p id="deadline" class="text-2xl text-light-gray"></p>
+                <div class="mt-8 flex justify-center">
+                    <input id="eventId" type="number" min="1" placeholder="输入事件 ID（如 1）" 
+                           class="w-full max-w-xs px-6 py-4 bg-[#070808]/80 border border-[#0068FF]/30 rounded-full text-center text-lg sm:text-xl focus:border-[#18E5A0] focus:outline-none transition-all">
+                </div>
 
-                    <div class="grid grid-cols-2 gap-8">
-                        <div class="bg-blue-900/30 rounded-2xl p-8">
-                            <p id="poolYes" class="text-5xl font-bold text-primary">0</p>
-                            <p class="mt-2 text-xl">YES 奖池</p>
+                <div id="eventCard" class="hidden mt-8 space-y-8 mobile-input-fix">
+                    <h2 id="title" class="text-3xl sm:text-4xl font-bold text-[#18E5A0] text-center break-words"></h2>
+                    <p id="deadline" class="text-xl sm:text-2xl text-[#E5E7EB] text-center"></p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="bg-blue-900/30 rounded-2xl p-6 text-center">
+                            <p id="poolYes" class="text-pool text-[#0068FF]">0</p>
+                            <p class="mt-2 text-lg sm:text-xl">YES 奖池</p>
                         </div>
-                        <div class="bg-red-900/30 rounded-2xl p-8">
-                            <p id="poolNo" class="text-5xl font-bold text-secondary">0</p>
-                            <p class="mt-2 text-xl">NO 奖池</p>
+                        <div class="bg-red-900/30 rounded-2xl p-6 text-center">
+                            <p id="poolNo" class="text-pool text-[#18E5A0]">0</p>
+                            <p class="mt-2 text-lg sm:text-xl">NO 奖池</p>
                         </div>
                     </div>
 
                     <div id="betSection" class="space-y-6">
-                        <input id="betAmount" type="text" placeholder="输入投注 GDOG 数量" class="w-full px-6 py-4 bg-dark/80 border border-primary/30 rounded-full text-center text-xl focus:border-secondary focus:outline-none">
-                        <div class="grid grid-cols-2 gap-6">
-                            <button id="betYesBtn" class="py-5 bg-primary text-white rounded-full text-2xl font-bold hover:bg-primary/80">投 YES</button>
-                            <button id="betNoBtn" class="py-5 bg-secondary text-black rounded-full text-2xl font-bold hover:bg-secondary/80">投 NO</button>
+                        <input id="betAmount" type="text" placeholder="输入投注 GDOG 数量" 
+                               class="w-full px-6 py-4 bg-[#070808]/80 border border-[#0068FF]/30 rounded-full text-center text-xl focus:border-[#18E5A0] focus:outline-none transition-all">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="betYesBtn" class="py-5 bg-[#0068FF] text-white rounded-full text-xl sm:text-2xl font-bold hover:bg-[#0068FF]/80 transition-all">投 YES</button>
+                            <button id="betNoBtn" class="py-5 bg-[#18E5A0] text-black rounded-full text-xl sm:text-2xl font-bold hover:bg-[#18E5A0]/80 transition-all">投 NO</button>
                         </div>
                     </div>
 
-                    <button id="claimBtn" class="hidden w-full py-5 bg-gradient-to-r from-primary to-secondary rounded-full text-2xl font-bold">
+                    <button id="claimBtn" class="hidden w-full py-5 bg-gradient-to-r from-[#0068FF] to-[#18E5A0] rounded-full text-xl sm:text-2xl font-bold">
                         领取奖励
                     </button>
                 </div>
 
-                <p id="status" class="text-center text-light-gray text-lg min-h-12"></p>
+                <p id="status" class="text-center text-[#E5E7EB] text-base sm:text-lg min-h-12 mt-6"></p>
             </div>
         </div>
-    </section>
+    </main>
 
-    <footer class="bg-dark/95 py-12 border-t border-primary/20 text-center text-light-gray text-sm">
+    <footer class="py-8 sm:py-12 border-t border-[#0068FF]/20 text-center text-[#E5E7EB] text-xs sm:text-sm bg-[#070808]/95">
         合约地址: 0x9567BB996f01eF0f634B553efD71CcC53F2D303f | 网络: GateLayer Mainnet (Chain ID: 10088)
     </footer>
 
@@ -114,26 +107,20 @@
         const CONTRACT = '0x9567BB996f01eF0f634B553efD71CcC53F2D303f';
         const GDOG = '0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04';
 
-        // 完整必要的 ABI（重点修复）
         const ABI = [
             {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"events","outputs":[
                 {"internalType":"string","name":"optionYes","type":"string"},
                 {"internalType":"string","name":"optionNo","type":"string"},
-                {"internalType":"uint64","name":"startTime","type":"uint64"},
                 {"internalType":"uint64","name":"bettingDeadline","type":"uint64"},
                 {"internalType":"uint128","name":"totalYes","type":"uint128"},
                 {"internalType":"uint128","name":"totalNo","type":"uint128"},
                 {"internalType":"uint64","name":"resolvedTime","type":"uint64"},
                 {"internalType":"bool","name":"yesWins","type":"bool"}
-            ],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userBets","outputs":[
-                {"internalType":"uint256","name":"","type":"uint256","components":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}]}
             ],"stateMutability":"view","type":"function"}
         ];
 
-        // 标准 ERC20 ABI（必须完整）
         const ERC20_ABI = [
             {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
@@ -162,7 +149,7 @@
                 setInterval(updateBalance, 10000);
                 document.getElementById('status').textContent = '连接成功！请输入事件 ID';
             } catch (e) {
-                document.getElementById('status').textContent = '连接被拒绝或失败';
+                document.getElementById('status').textContent = '连接失败或被拒绝';
             }
         }
 
@@ -173,11 +160,8 @@
             } catch (e) {
                 if (e.code === 4902) {
                     await window.ethereum.request({method: 'wallet_addEthereumChain', params: [{
-                        chainId: `0x${c.chainId.toString(16)}`,
-                        chainName: c.chainName,
-                        rpcUrls: [c.rpcUrl],
-                        nativeCurrency: c.nativeCurrency,
-                        blockExplorerUrls: [c.blockExplorer]
+                        chainId: `0x${c.chainId.toString(16)}`, chainName: c.chainName, rpcUrls: [c.rpcUrl],
+                        nativeCurrency: c.nativeCurrency, blockExplorerUrls: [c.blockExplorer]
                     }]});
                 }
             }
@@ -187,7 +171,7 @@
             if (!account) return;
             try {
                 const b = await token.methods.balanceOf(account).call();
-                document.getElementById('balanceStatus').textContent = `GDOG 余额: ${Number(web3.utils.fromWei(b, 'ether')).toFixed(4)}`;
+                document.getElementById('balanceStatus').textContent = `GDOG 余额: ${Math.floor(Number(web3.utils.fromWei(b, 'ether')))}`;
             } catch {}
         }
 
@@ -205,8 +189,13 @@
 
                 document.getElementById('title').textContent = `${e.optionYes} vs ${e.optionNo}`;
                 document.getElementById('deadline').textContent = `投注截止：${new Date(Number(e.bettingDeadline)*1000).toLocaleString()}`;
-                document.getElementById('poolYes').textContent = Number(web3.utils.fromWei(e.totalYes,'ether')).toFixed(4);
-                document.getElementById('poolNo').textContent = Number(web3.utils.fromWei(e.totalNo,'ether')).toFixed(4);
+
+                // 关键：只显示整数，超大数字也不溢出
+                const yesAmount = Math.floor(Number(web3.utils.fromWei(e.totalYes, 'ether')));
+                const noAmount = Math.floor(Number(web3.utils.fromWei(e.totalNo, 'ether')));
+                
+                document.getElementById('poolYes').textContent = yesAmount.toLocaleString();
+                document.getElementById('poolNo').textContent = noAmount.toLocaleString();
 
                 document.getElementById('betSection').style.display = open ? 'block' : 'none';
                 document.getElementById('claimBtn').classList.toggle('hidden', !resolved);
@@ -246,7 +235,7 @@
                 setTimeout(loadEvent, 3000);
             } catch (err) {
                 console.error(err);
-                document.getElementById('status').textContent = '投注失败：用户取消或余额不足';
+                document.getElementById('status').textContent = '投注失败：取消或余额不足';
             }
         }
 
