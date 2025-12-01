@@ -11,19 +11,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#0068FF',
-                        secondary: '#18E5A0',
-                        accent: '#FFD700',
-                        dark: '#070808',
-                        'light-gray': '#E5E7EB'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        display: ['Changa One', 'system-ui', 'sans-serif']
-                    },
+                    colors: { primary: '#0068FF', secondary: '#18E5A0', accent: '#FFD700', dark: '#070808', 'light-gray': '#E5E7EB' },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Changa One', 'system-ui', 'sans-serif'] },
                     animation: { 'float': 'float 3s ease-in-out infinite' },
-                    keyframes: { float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } }
+                    keyframes: { float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } } }
                 }
             }
         }
@@ -65,8 +56,8 @@
             <div id="ownerPanel" class="hidden max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl p-10 border border-primary/40 glow-border mb-12">
                 <h3 class="text-3xl font-bold text-secondary mb-8">Owner 创建新事件</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <input id="optionYes" class="input-field" placeholder="Yes 选项">
-                    <input id="optionNo" class="input-field" placeholder="No 选项">
+                    <input id="optionYes" class="input-field" placeholder="Yes 选项（例如：特朗普胜选）">
+                    <input id="optionNo" class="input-field" placeholder="No 选项（例如：哈里斯胜选）">
                     <input id="hours" type="number" class="input-field" placeholder="下注时长（小时）" value="24">
                     <button id="createBtn" class="btn-primary">创建事件</button>
                 </div>
@@ -98,9 +89,9 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
         const CONTRACT = "0x9567BB996f01eF0f634B553efD71CcC53F2D303f";
-        const OWNER = "0xFb10E2b3F29931f8372680877f1e4b3a139D9Fa3".toLowerCase();
+        const OWNER = "0xfb10e2b3f29931f8372680877f1e4b3a139d9fa3".toLowerCase();
 
-        const chains = { GateLayer: { chainId: 10088, chainName: 'Gate Layer', rpcUrl: 'https://gatelayer-mainnet.gatenode.cc', blockExplorer: 'https://www.gatescan.org/gatelayer/', nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 } }};
+        const chains = { GateLayer: { chainId: 10088, chainName: 'Gate Layer', rpcUrl: 'https://gatelayer-mainnet.gatenode.cc', blockExplorer: 'https://www.gatescan.org/gatelayer/', nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 }}};
 
         const abi = [
             {"inputs":[],"name":"owner","outputs":[{"type":"address"}],"stateMutability":"view","type":"function"},
@@ -117,7 +108,7 @@
         let currentEventId, currentIsYes;
 
         async function init() {
-            if (!window.ethereum) return alert("请安装MetaMask");
+            if (!window.ethereum) return alert("请安装 MetaMask");
             web3 = new Web3(window.ethereum);
             try {
                 await ethereum.request({method:'eth_requestAccounts'});
@@ -152,7 +143,7 @@
             if (!contract) return;
             const list = document.getElementById('eventsList');
             list.innerHTML = '';
-            const latest = (await contract.methods.nextEventId().call()) - 1;
+            const latest = Number(await contract.methods.nextEventId().call()) - 1;
             for (let i = latest; i >= Math.max(0, latest-19); i--) {
                 const e = await contract.methods.events(i+1).call();
                 const [uYes, uNo] = await contract.methods.userBets(i+1, account || '0x0').call();
@@ -207,7 +198,7 @@
             return `${h}小时${m}分`;
         }
 
-        function openModal(id, yes, no, deadline) {
+        function openModal = (id, yes, no, deadline) => {
             currentEventId = id;
             document.getElementById('modalTitle').textContent = `${yes} vs ${no}`;
             document.getElementById('deadlineInfo').textContent = `截止时间: ${new Date(deadline*1000).toLocaleString()}`;
@@ -235,14 +226,14 @@
             loadEvents();
         };
 
-        async function resolveEvent(id, yesWins) {
+        resolveEvent = async (id, yesWins) => {
             if (!confirm(`确认${yesWins?'Yes':'No'}获胜？`)) return;
             await contract.methods.resolve(id, yesWins).send({from:account});
             alert('开奖成功');
             loadEvents();
         }
 
-        async function claim(id) {
+        claim = async (id) => {
             await contract.methods.claim(id).send({from:account});
             alert('领取成功');
             loadEvents();
