@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GDOG 预测市场</title>
-    <link rel="icon" type="image/png" href="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" />
+    <link rel="icon" type="image/png" href="images/gdog_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Changa+One&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#0068FF', secondary: '#18E5A0', dark: '#070808', 'light-gray': '#E5E7EB' },
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Changa One', 'system-ui', 'sans-serif'] },
-                    animation: { float: 'float 3s ease-in-out infinite' },
+                    colors: {
+                        primary: '#0068FF',
+                        secondary: '#18E5A0',
+                        accent: '#FFD700',
+                        dark: '#070808',
+                        'light-gray': '#E5E7EB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Changa One', 'system-ui', 'sans-serif']
+                    },
+                    animation: { 'float': 'float 3s ease-in-out infinite' },
                     keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } } }
                 }
             }
@@ -24,262 +32,251 @@
         @layer utilities {
             .text-shadow-glow { text-shadow: 0 0 10px rgba(0, 104, 255, 0.5); }
             .glow-border { box-shadow: 0 0 12px rgba(24, 229, 160, 0.3); }
+            .bg-grid { background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://.w3.org/2000/svg"%3E%3Ccircle cx="1" cy="1" r="1" fill="%230068FF" fill-opacity="0.1"/%3E%3C/svg%3E'); background-size: 20px 20px; }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Changa+One&display=swap" rel="stylesheet">
 </head>
 <body class="bg-dark text-white font-sans overflow-x-hidden">
 
-    <header class="fixed w-full z-50 bg-dark/90 backdrop-blur-md">
+    <header class="fixed w-full z-50 bg-dark/90 backdrop-blur-md" id="navbar">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-10 h-10 rounded-full" />
+                <img src="images/gdog_logo.png" alt="GDOG" class="w-10 h-10 rounded-full">
                 <span class="font-display text-3xl text-primary text-shadow-glow">GDOG 预测市场</span>
             </div>
         </div>
     </header>
 
-    <section class="min-h-screen pt-24 pb-16 px-4">
-        <div class="container mx-auto max-w-4xl">
-            <div class="text-center mb-10">
-                <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-32 h-32 mx-auto mb-4 animate-float rounded-full border-4 border-secondary/50 glow-border" />
-                <h1 class="font-display text-5xl text-primary text-shadow-glow">GDOG 预测市场</h1>
-                <p class="text-light-gray mt-3 text-lg">用 GDOG 预测事件结果，赢取奖池</p>
-            </div>
+    <section class="min-h-screen pt-24 pb-16 bg-grid relative overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-dark pointer-events-none"></div>
+        <div class="absolute top-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
 
-            <div class="bg-dark/50 p-6 rounded-xl border border-primary/30 space-y-6">
-                <button id="connectWalletButton" class="w-full py-3 bg-primary text-white rounded-full font-medium hover:bg-primary/80 transition-all">
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="w-48 h-48 mx-auto mb-8 animate-float">
+                <img src="images/gdog_logo.png" alt="GDOG" class="w-full h-full object-cover rounded-full border-4 border-secondary/50 glow-border">
+            </div>
+            <h1 class="font-display text-5xl md:text-7xl mb-6 text-primary text-shadow-glow">GDOG 预测市场</h1>
+            <p class="text-xl md:text-2xl text-light-gray max-w-3xl mx-auto mb-10">输入事件 ID 参与预测，赢取奖池</p>
+
+            <div class="bg-dark/50 p-8 rounded-2xl border border-primary/30 max-w-2xl mx-auto space-y-8">
+
+                <button id="connectWalletButton" class="w-full py-4 bg-primary text-white rounded-full text-xl font-bold hover:bg-primary/80 transition-all">
                     连接钱包
                 </button>
 
-                <div id="userInfo" class="hidden bg-dark/70 p-4 rounded-lg border border-primary/30 text-sm space-y-2">
-                    <div class="flex justify-between"><span class="text-light-gray">钱包地址:</span> <span id="addrShow"></span></div>
-                    <div class="flex justify-between"><span class="text-light-gray">GDOG 余额:</span> <span id="gdogBalance">0</span></div>
-                </div>
-
-                <div id="ownerPanel" class="hidden space-y-4 p-5 bg-dark/70 rounded-lg border border-secondary/30">
-                    <h3 class="text-xl font-bold text-secondary">创建新事件（仅 Owner）</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input id="yesText" placeholder="Yes 选项" class="px-4 py-2 bg-dark/80 border border-primary/30 rounded-lg focus:border-secondary focus:outline-none">
-                        <input id="noText" placeholder="No 选项" class="px-4 py-2 bg-dark/80 border border-primary/30 rounded-lg focus:border-secondary focus:outline-none">
-                        <input id="hours" type="number" min="1" max="720" placeholder="投注时长（小时）" class="px-4 py-2 bg-dark/80 border border-primary/30 rounded-lg focus:border-secondary focus:outline-none">
-                    </div>
-                    <button id="createEventBtn" class="w-full py-3 bg-secondary text-dark font-bold rounded-full hover:bg-secondary/80">创建事件</button>
-                </div>
+                <p id="networkStatus" class="text-light-gray text-sm">点击上方按钮连接钱包</p>
+                <p id="balanceStatus" class="text-light-gray text-sm">GDOG 余额: 加载中...</p>
 
                 <div class="text-center">
-                    <input id="eventIdInput" type="number" min="1" placeholder="输入事件 ID 查看（可选）" class="w-72 px-4 py-2 bg-dark/80 border border-primary/30 rounded-lg focus:border-secondary focus:outline-none text-center" />
+                    <input id="eventId" type="number" min="1" placeholder="输入事件 ID（如 1）" class="w-80 px-6 py-4 bg-dark/80 border border-primary/30 rounded-full text-center text-xl focus:border-secondary focus:outline-none">
                 </div>
 
-                <div id="eventsList" class="space-y-6"></div>
-                <p id="status" class="text-light-gray text-center text-sm min-h-6"></p>
+                <div id="eventCard" class="hidden space-y-8">
+                    <h2 id="title" class="text-4xl font-bold text-secondary"></h2>
+                    <p id="deadline" class="text-2xl text-light-gray"></p>
+
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="bg-blue-900/30 rounded-2xl p-8">
+                            <p id="poolYes" class="text-5xl font-bold text-primary">0</p>
+                            <p class="mt-2 text-xl">YES 奖池</p>
+                        </div>
+                        <div class="bg-red-900/30 rounded-2xl p-8">
+                            <p id="poolNo" class="text-5xl font-bold text-secondary">0</p>
+                            <p class="mt-2 text-xl">NO 奖池</p>
+                        </div>
+                    </div>
+
+                    <div id="betSection" class="space-y-6">
+                        <input id="betAmount" type="text" placeholder="输入投注 GDOG 数量" class="w-full px-6 py-4 bg-dark/80 border border-primary/30 rounded-full text-center text-xl focus:border-secondary focus:outline-none">
+                        <div class="grid grid-cols-2 gap-6">
+                            <button id="betYesBtn" class="py-5 bg-primary text-white rounded-full text-2xl font-bold hover:bg-primary/80">投 YES</button>
+                            <button id="betNoBtn" class="py-5 bg-secondary text-black rounded-full text-2xl font-bold hover:bg-secondary/80">投 NO</button>
+                        </div>
+                    </div>
+
+                    <button id="claimBtn" class="hidden w-full py-5 bg-gradient-to-r from-primary to-secondary rounded-full text-2xl font-bold">
+                        领取奖励
+                    </button>
+                </div>
+
+                <p id="status" class="text-center text-light-gray text-lg min-h-12"></p>
             </div>
         </div>
     </section>
 
-    <footer class="bg-dark/95 py-8 border-t border-primary/20 text-center text-light-gray text-sm">
-        合约地址: 0x9567BB996f01eF0f634B553efD71CcC53F2D303f
+    <footer class="bg-dark/95 py-12 border-t border-primary/20 text-center text-light-gray text-sm">
+        合约地址: 0x9567BB996f01eF0f634B553efD71CcC53F2D303f | 网络: GateLayer Mainnet (Chain ID: 10088)
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script>
-        const CONTRACT_ADDRESS = '0x9567BB996f01eF0f634B553efD71CcC53F2D303f';
-        const GDOG_ADDRESS = '0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04';
-
-        const contractABI = [{"inputs":[{"internalType":"string","name":"yes","type":"string"},{"internalType":"string","name":"no","type":"string"},{"internalType":"uint64","name":"bettingHours","type":"uint64"}],"name":"create","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yesWins","type":"bool"}],"name":"resolve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"events","outputs":[{"internalType":"string","name":"optionYes","type":"string"},{"internalType":"string","name":"optionNo","type":"string"},{"internalType":"uint64","name":"startTime","type":"uint64"},{"internalType":"uint64","name":"bettingDeadline","type":"uint64"},{"internalType":"uint128","name":"totalYes","type":"uint128"},{"internalType":"uint128","name":"totalNo","type":"uint128"},{"internalType":"uint64","name":"resolvedTime","type":"uint64"},{"internalType":"bool","name":"yesWins","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userBets","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
-
-        const erc20ABI = [{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-
-        let web3, account, contract, gdogToken, isOwner = false;
-        const status = document.getElementById('status');
-
-        async function init() {
-            if (!window.ethereum) return status.textContent = '请安装 MetaMask';
-            web3 = new Web3(window.ethereum);
-            await switchToGateLayer();
-
-            // 唯一改动：改成 addEventListener，永不失效
-            document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
-        }
-
-        async function switchToGateLayer() {
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x2768' }] });
-            } catch (e) {
-                if (e.code === 4902) {
-                    await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{
-                        chainId: '0x2768', chainName: 'Gate Layer', rpcUrls: ['https://gatelayer-mainnet.gatenode.cc/'],
-                        nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 },
-                        blockExplorerUrls: ['https://www.gatescan.org/gatelayer/']
-                    }]});
-                }
+        // 完全复制你 Swap 页面的网络配置
+        const chains = {
+            GateLayer: {
+                chainId: 10088,
+                chainName: 'Gate Layer',
+                rpcUrl: 'https://gatelayer-mainnet.gatenode.cc/',
+                blockExplorer: 'https://www.gatescan.org/gatelayer/',
+                nativeCurrency: { name: 'GT', symbol: 'GT', decimals: 18 }
             }
-        }
+        };
 
-        async function connectWallet() {
+        const CONTRACT = '0x9567BB996f01eF0f634B553efD71CcC53F2D303f';
+        const GDOG = '0xf6D9Cf57e20bA0d33372E8998A9424aa53411E04';
+
+        const ABI = [{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"events","outputs":[{"internalType":"string","name":"optionYes","type":"string"},{"internalType":"string","name":"optionNo","type":"string"},{"internalType":"uint64","name":"startTime","type":"uint64"},{"internalType":"uint64","name":"bettingDeadline","type":"uint64"},{"internalType":"uint128","name":"totalYes","type":"uint128"},{"internalType":"uint128","name":"totalNo","type":"uint128"},{"internalType":"uint64","name":"resolvedTime","type":"uint64"},{"internalType":"bool","name":"yesWins","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"userBets","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+
+        const ERC20_ABI = [{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+
+        let web3, account, contract, token;
+
+        // 完全复制你 Swap 的连接方式
+        async function initializeWeb3() {
+            if (!window.ethereum) {
+                document.getElementById('status').textContent = '请安装 MetaMask';
+                return;
+            }
+            web3 = new Web3(window.ethereum);
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = (await web3.eth.getAccounts())[0];
-                contract = new web3.eth.Contract(contractABI, CONTRACT_ADDRESS);
-                gdogToken = new web3.eth.Contract(erc20ABI, GDOG_ADDRESS);
+                await switchNetwork('GateLayer');
 
-                const owner = await contract.methods.owner().call();
-                isOwner = owner.toLowerCase() === account.toLowerCase();
-                if (isOwner) document.getElementById('ownerPanel').classList.remove('hidden');
+                contract = new web3.eth.Contract(ABI, CONTRACT);
+                token = new web3.eth.Contract(ERC20_ABI, GDOG);
 
                 document.getElementById('connectWalletButton').innerHTML = `已连接: ${account.slice(0,6)}...${account.slice(-4)}`;
                 document.getElementById('connectWalletButton').disabled = true;
-                document.getElementById('userInfo').classList.remove('hidden');
-                document.getElementById('addrShow').textContent = `${account.slice(0,8)}...${account.slice(-6)}`;
-
-                status.textContent = '';
+                document.getElementById('networkStatus').textContent = '已连接 GateLayer 主网';
                 updateBalance();
                 setInterval(updateBalance, 10000);
-                loadAllEvents();
-            } catch {
-                status.textContent = '连接失败，请重试';
+                document.getElementById('status').textContent = '连接成功！请输入事件 ID';
+            } catch (e) {
+                document.getElementById('status').textContent = '连接失败，请重试';
+            }
+        }
+
+        // 完全复制你 Swap 页面的切网逻辑
+        async function switchNetwork(chain) {
+            const chainConfig = chains[chain];
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: `0x${chainConfig.chainId.toString(16)}` }]
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: `0x${chainConfig.chainId.toString(16)}`,
+                            chainName: chainConfig.chainName,
+                            rpcUrls: [chainConfig.rpcUrl],
+                            nativeCurrency: chainConfig.nativeCurrency,
+                            blockExplorerUrls: [chainConfig.blockExplorer]
+                        }]
+                    });
+                }
             }
         }
 
         async function updateBalance() {
             if (!account) return;
             try {
-                const bal = await gdogToken.methods.balanceOf(account).call();
-                document.getElementById('gdogBalance').textContent = Number(web3.utils.fromWei(bal, 'ether')).toFixed(4);
+                const b = await token.methods.balanceOf(account).call();
+                document.getElementById('balanceStatus').textContent = `GDOG 余额: ${Number(web3.utils.fromWei(b, 'ether')).toFixed(4)}`;
             } catch {}
         }
 
-        async function loadAllEvents() {
-            const container = document.getElementById('eventsList');
-            container.innerHTML = '';
-            let id = 1;
-            while (true) {
-                try {
-                    const e = await contract.methods.events(id).call();
-                    if (e.optionYes || e.optionNo) {
-                        renderEvent(id, e);
-                    }
-                    id++;
-                } catch { break; }
-            }
-            if (!container.innerHTML) container.innerHTML = '<p class="text-center text-light-gray">暂无事件</p>';
-        }
+        // 加载事件
+        async function loadEvent() {
+            const id = document.getElementById('eventId').value.trim();
+            if (!id) return;
 
-        function renderEvent(id, e) {
-            contract.methods.userBets(id, account || '0x0').call().then(user => {
+            try {
+                const e = await contract.methods.events(id).call();
+                if (!e.optionYes && !e.optionNo) throw '';
+
                 const now = Math.floor(Date.now()/1000);
                 const open = now <= e.bettingDeadline && e.resolvedTime == 0;
                 const resolved = e.resolvedTime > 0;
 
-                const div = document.createElement('div');
-                div.className = 'bg-dark/70 p-6 rounded-lg border border-primary/30';
-                div.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-secondary">#${id} ${e.optionYes} vs ${e.optionNo}</h3>
-                            <p class="text-sm text-light-gray">截止：${new Date(e.bettingDeadline*1000).toLocaleString()}</p>
-                            ${resolved ? `<p class="text-lg font-bold ${e.yesWins?'text-green-400':'text-red-400'}">结果：${e.yesWins?'YES 胜':'NO 胜'}</p>` : ''}
-                        </div>
-                        ${isOwner && !resolved ? `<div class="space-x-2">
-                            <button class="px-4 py-2 bg-green-600 rounded hover:bg-green-500 resolve-btn" data-id="${id}" data-win="true">YES 胜</button>
-                            <button class="px-4 py-2 bg-red-600 rounded hover:bg-red-500 resolve-btn" data-id="${id}" data-win="false">NO 胜</button>
-                        </div>` : ''}
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 text-center mb-4">
-                        <div class="bg-blue-900/30 rounded p-4"><p class="text-2xl font-bold text-primary">${web3.utils.fromWei(e.totalYes,'ether')}</p><p>YES 奖池</p></div>
-                        <div class="bg-red-900/30 rounded p-4"><p class="text-2xl font-bold text-secondary">${web3.utils.fromWei(e.totalNo,'ether')}</p><p>NO 奖池</p></div>
-                    </div>
-                    <div class="text-sm text-light-gray mb-4">
-                        <div>你投 YES：${web3.utils.fromWei(user[0],'ether')}</div>
-                        <div>你投 NO：${web3.utils.fromWei(user[1],'ether')}</div>
-                    </div>
-                    ${open ? `<div class="flex gap-3">
-                        <input type="text" class="flex-1 px-4 py-2 bg-dark/80 border border-primary/30 rounded focus:border-secondary focus:outline-none bet-input" placeholder="输入 GDOG 数量" data-id="${id}">
-                        <button class="px-6 py-2 bg-primary rounded font-bold hover:bg-primary/80 bet-btn" data-id="${id}" data-yes="true">投 YES</button>
-                        <button class="px-6 py-2 bg-secondary text-dark rounded font-bold hover:bg-secondary/80 bet-btn" data-id="${id}" data-yes="false">投 NO</button>
-                    </div>` : ''}
-                    ${resolved && (BigInt(user[0])>0 || BigInt(user[1])>0) ? `<button class="mt-4 w-full py-3 bg-gradient-to-r from-primary to-secondary rounded-full font-bold hover:opacity-90 claim-btn" data-id="${id}">
-                        ${((e.yesWins && BigInt(user[0])>0) || (!e.yesWins && BigInt(user[1])>0)) ? '领取奖励' : '无奖励可领'}
-                    </button>` : ''}
-                `;
-                document.getElementById('eventsList').appendChild(div);
-            }).catch(() => {});
+                document.getElementById('title').textContent = `${e.optionYes} vs ${e.optionNo}`;
+                document.getElementById('deadline').textContent = `截止：${new Date(e.bettingDeadline*1000).toLocaleString()}`;
+                document.getElementById('poolYes').textContent = Number(web3.utils.fromWei(e.totalYes,'ether')).toFixed(4);
+                document.getElementById('poolNo').textContent = Number(web3.utils.fromWei(e.totalNo,'ether')).toFixed(4);
+
+                document.getElementById('betSection').style.display = open ? 'block' : 'none';
+                document.getElementById('claimBtn').classList.toggle('hidden', !resolved);
+
+                if (resolved) {
+                    document.getElementById('claimBtn').textContent = e.yesWins ? 'YES 胜 → 领取奖励' : 'NO 胜 → 领取奖励';
+                }
+
+                document.getElementById('eventCard').classList.remove('hidden');
+                document.getElementById('status').textContent = `事件 #${id} 加载成功`;
+            } catch {
+                document.getElementById('status').textContent = '事件不存在或加载失败';
+            }
         }
 
-        async function approveIfNeeded(wei) {
-            const a = await gdogToken.methods.allowance(account, CONTRACT_ADDRESS).call();
-            if (BigInt(a) >= BigInt(wei)) return;
-            status.textContent = '请授权 GDOG（只需一次）';
-            await gdogToken.methods.approve(CONTRACT_ADDRESS, '115792089237316195423570985008687907853269984665640564039457584007913129639935').send({from: account});
-            status.textContent = '授权成功';
+        // 自动授权
+        async function approveIfNeeded(amountWei) {
+            const a = await token.methods.allowance(account, CONTRACT).call();
+            if (BigInt(a) >= amountWei) return;
+            document.getElementById('status').textContent = '请授权 GDOG（只需一次）';
+            await token.methods.approve(CONTRACT, '115792089237316195423570985008687907853269984665640564039457584007913129639935').send({from: account});
+            document.getElementById('status').textContent = '授权成功！';
         }
 
-        document.getElementById('eventsList').addEventListener('click', async e => {
-            const btn = e.target;
+        // 投注
+        async function placeBet(yes) {
+            const amt = document.getElementById('betAmount').value.trim();
+            if (!amt || Number(amt) <= 0) return document.getElementById('status').textContent = '请输入有效数量';
 
-            if (btn.classList.contains('bet-btn')) {
-                const id = Number(btn.dataset.id);
-                const yes = btn.dataset.yes === 'true';
-                const input = document.querySelector(`.bet-input[data-id="${id}"]`);
-                const amt = input.value.trim();
-                if (!amt || Number(amt) <= 0) return status.textContent = '请输入数量';
-                const wei = web3.utils.toWei(amt, 'ether');
-                try {
-                    await approveIfNeeded(wei);
-                    status.textContent = '投注中...';
-                    await contract.methods.bet(id, yes, wei).send({from: account});
-                    status.textContent = '投注成功！';
-                    input.value = '';
-                    setTimeout(loadAllEvents, 2000);
-                } catch { status.textContent = '投注失败或已取消'; }
-            }
+            const wei = web3.utils.toWei(amt, 'ether');
+            const id = document.getElementById('eventId').value;
 
-            if (btn.classList.contains('claim-btn')) {
-                const id = Number(btn.dataset.id);
-                status.textContent = '领取中...';
-                try {
-                    await contract.methods.claim(id).send({from: account});
-                    status.textContent = '领取成功！';
-                    setTimeout(loadAllEvents, 2000);
-                } catch { status.textContent = '无奖励或已领取'; }
-            }
-
-            if (btn.classList.contains('resolve-btn')) {
-                if (!confirm(`确定让 ${btn.dataset.win==='true'?'YES':'NO'} 获胜？`)) return;
-                const id = Number(btn.dataset.id);
-                status.textContent = '结算中...';
-                try {
-                    await contract.methods.resolve(id, btn.dataset.win === 'true').send({from: account});
-                    status.textContent = '结算成功';
-                    setTimeout(loadAllEvents, 2000);
-                } catch { status.textContent = '结算失败'; }
-            }
-        });
-
-        document.getElementById('createEventBtn')?.addEventListener('click', async () => {
-            const yes = document.getElementById('yesText').value.trim();
-            const no = document.getElementById('noText').value.trim();
-            const h = document.getElementById('hours').value;
-            if (!yes || !no || !h) return status.textContent = '请完整填写';
-            status.textContent = '创建中...';
             try {
-                await contract.methods.create(yes, no, h).send({from: account});
-                status.textContent = '创建成功！';
-                document.getElementById('yesText').value = document.getElementById('noText').value = document.getElementById('hours').value = '';
-                setTimeout(loadAllEvents, 3000);
-            } catch { status.textContent = '创建失败'; }
-        });
+                await approveIfNeeded(wei);
+                document.getElementById('status').textContent = '投注中...';
+                await contract.methods.bet(id, yes, wei).send({from: account});
+                document.getElementById('status').textContent = '投注成功！';
+                document.getElementById('betAmount').value = '';
+                setTimeout(loadEvent, 2000);
+            } catch {
+                document.getElementById('status').textContent = '投注失败或已取消';
+            }
+        }
 
-        document.getElementById('eventIdInput')?.addEventListener('change', () => {
-            const id = parseInt(document.getElementById('eventIdInput').value);
-            document.getElementById('eventsList').innerHTML = '';
-            if (!id) return loadAllEvents();
-            contract.methods.events(id).call().then(e => {
-                if (e.optionYes || e.optionNo) renderEvent(id, e);
-                else status.textContent = '事件不存在';
-            }).catch(() => { status.textContent = '事件不存在'; loadAllEvents(); });
-        });
+        // 领奖
+        async function claim() {
+            const id = document.getElementById('eventId').value;
+            document.getElementById('status').textContent = '领取中...';
+            try {
+                await contract.methods.claim(id).send({from: account});
+                document.getElementById('status').textContent = '领取成功！';
+                setTimeout(loadEvent, 2000);
+            } catch {
+                document.getElementById('status').textContent = '无奖励或已领取';
+            }
+        }
 
-        window.addEventListener('load', init);
+        // 完全复制你 Swap 页面的绑定方式
+        document.getElementById('connectWalletButton').addEventListener('click', initializeWeb3);
+        document.getElementById('eventId').addEventListener('change', loadEvent);
+        document.getElementById('betYesBtn').addEventListener('click', () => placeBet(true));
+        document.getElementById('betNoBtn').addEventListener('click', () => placeBet(false));
+        document.getElementById('claimBtn').addEventListener('click', claim);
+
+        // 页面加载时自动检查
+        window.addEventListener('load', () => {
+            if (window.ethereum?.selectedAddress) {
+                initializeWeb3();
+            }
+        });
     </script>
 </body>
 </html>
