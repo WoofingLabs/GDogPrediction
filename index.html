@@ -42,7 +42,7 @@
         <div class="text-center mb-10">
             <img src="https://woofinglabs.github.io/GdogToTheMoon/images/gdog_logo.png" alt="GDOG" class="w-32 h-32 mx-auto mb-4 animate-float rounded-full border-4 border-secondary/50 glow-border" />
             <h1 class="font-display text-5xl text-primary text-shadow-glow">GDOG 预测市场</h1>
-            <p class="text-light-gray mt-3 text-lg">用 GDOG 预测事件结果，赢取全部奖池</p>
+            <p class="text-light-gray mt-3 text-lg">用 GDOG 预测事件结果，赢取奖池</p>
         </div>
 
         <div class="bg-dark/50 p-6 rounded-xl border border-primary/30 space-y-6">
@@ -55,7 +55,7 @@
                 <div class="flex justify-between"><span class="text-light-gray">GDOG 余额:</span> <span id="gdogBalance">0</span></div>
             </div>
 
-            <div id="ownerPanel" class="hidden space-y-4 p-5 bg-dark/70 rounded-lg border border-secondary/30 p-5">
+            <div id="ownerPanel" class="hidden space-y-4 p-5 bg-dark/70 rounded-lg border border-secondary/30">
                 <h3 class="text-xl font-bold text-secondary">Owner 创建事件</h3>
                 <div class="grid md:grid-cols-3 gap-3">
                     <input id="yesText" placeholder="Yes 选项" class="px-4 py-2 bg-dark/80 border border-primary/30 rounded-lg focus:border-secondary focus:outline-none">
@@ -139,23 +139,34 @@
 
     async function updateBalance() {
         if (!account) return;
-        const b = await token.methods.balanceOf(account).call();
-        document.getElementById('gdogBalance').textContent = Number(web3.utils.fromWei(b,'ether')).toFixed(4);
+        try {
+            const b = await token.methods.balanceOf(account).call();
+            document.getElementById('gdogBalance').textContent = Number(web3.utils.fromWei(b,'ether')).toFixed(4);
+        } catch {}
     }
 
     async function loadAllEvents() {
-        const c = document.getElementById('eventsContainer');
-        c.innerHTML = '';
+        const container = document.getElementById('eventsContainer');
+        container.innerHTML = '<p class="text-center text-light-gray">加载中...</p>';
+        const events = [];
         let id = 1;
         while (true) {
             try {
                 const e = await contract.methods.events(id).call();
-                if (!e.optionYes && !e.optionNo) break;
-                renderEventCard(id, e);
+                if (e.optionYes || e.optionNo) {  // 只要有一个字段有值就算存在
+                    events.push({id, data: e});
+                }
                 id++;
-            } catch { break; }
+            } catch (err) {
+                break; // 只有真正 revert（越界）才停止
+            }
         }
-        if (!c.innerHTML) c.innerHTML = '<p class="text-center text-light-gray">暂无事件</p>';
+        container.innerHTML = '';
+        if (events.length === 0) {
+            container.innerHTML = '<p class="text-center text-light-gray">暂无事件</p>';
+        } else {
+            events.forEach(ev => renderEventCard(ev.id, ev.data));
+        }
     }
 
     function renderEventCard(id, e) {
@@ -268,7 +279,7 @@
         document.getElementById('eventsContainer').innerHTML = '';
         if (!id) return loadAllEvents();
         contract.methods.events(id).call().then(e => {
-            if (e.optionYes) renderEventCard(id, e);
+            if (e.optionYes || e.optionNo) renderEventCard(id, e);
             else status.textContent = '事件不存在';
         }).catch(() => { status.textContent = '事件不存在'; loadAllEvents(); });
     });
